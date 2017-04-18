@@ -100,6 +100,15 @@ class Server {
     return this._app.listen(...args);
   }
 
+  prepare() {
+    this._resources.map((resource) => {
+      const router = resource._router(this._db, this._settings);
+      this._app.use(this.get('prefix'), router);
+      this.resources[resource._name] = this._db.model(resource._name);
+      return true;
+    });
+  }
+
   use(...args) {
     if (args[0] instanceof Resource) {
       this._resources.push(args[0]);
